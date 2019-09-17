@@ -2,7 +2,10 @@ const express = require('express');
 var bodyParser = require('body-parser');
 
 const app = express();
-const port = 3000
+let port = process.env.PORT;
+if (port == null || port == "") {
+  port = 8000;
+}
 
 app.all('*', function(req, res, next) {
   var origin = req.get('origin'); 
