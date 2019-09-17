@@ -1,9 +1,16 @@
 {
+  "name": "noda",
+  "version": "0.0.1",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
     "body-parser": "^1.18.3",
     "express": "^4.16.4"
+  },
+  "engines": {
+    "node": "10.14.2",
+    "npm": "6.4.1",
+    "yarn": "1.12.3"
   }
 }
