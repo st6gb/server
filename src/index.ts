@@ -1,6 +1,13 @@
+import jwtExpress from 'express-jwt';
 import express from 'express';
 import bodyParser from 'body-parser';
-import { Pool } from 'pg';
+
+import guard from 'express-jwt-permissions';
+import jwt from 'jsonwebtoken';
+
+import { routerLogin } from './routes';
+const SECRET = 'secret';
+
 
 const app = express();
 let port = process.env.PORT;
@@ -8,23 +15,17 @@ if (!port) {
   port = '8000';
 }
 
-const pool = new Pool({
-  host: '127.0.0.1',
-  port: 5432,
-  database: 'test1',
-  user: 'postgres',
-  password: 'admin'
-});
 
-const sql = `SELECT * FROM users`;
-pool.query(sql, [], (err, res) => {
-  console.dir({ res });
-  console.table( res.fields );
-  console.table( res.rows );
-  pool.end();
-});
 
-app.all('*', function(req, res, next) {
+// const sql = `SELECT * FROM users`;
+// pool.query(sql, [], (err, res) => {
+//   console.dir({ res });
+//   console.table( res.fields );
+//   console.table( res.rows );
+//   pool.end();
+// });
+
+app.all('*', (req, res, next) => {
   const origin = req.get('origin');
   res.header('Access-Control-Allow-Origin', origin);
   res.header("Access-Control-Allow-Headers", "X-Requested-With");
@@ -37,10 +38,22 @@ app.use(bodyParser.urlencoded({
   extended: false
 }));
 
+app.use('/login', routerLogin)
+
 app.get('/', (req, res) => {
-  res.json({'lala':'Hello World!'})
+  const token = jwt.sign({ foo: 'bar' }, SECRET);
+  res.json({token})
   }
 )
+
+app.get('/protected',
+  (req, res) => {
+    const token = req.headers.authorization;
+    console.log(token)
+    const decoded = jwt.verify(token, SECRET);
+    console.log(decoded);
+    res.sendStatus(200);
+  });
 
 app.get('/file/:name', (req, res) => {
   const options = {
