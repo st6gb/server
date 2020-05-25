@@ -15,16 +15,6 @@ if (!port) {
   port = '8000';
 }
 
-
-
-// const sql = `SELECT * FROM users`;
-// pool.query(sql, [], (err, res) => {
-//   console.dir({ res });
-//   console.table( res.fields );
-//   console.table( res.rows );
-//   pool.end();
-// });
-
 app.all('*', (req, res, next) => {
   const origin = req.get('origin');
   res.header('Access-Control-Allow-Origin', origin);

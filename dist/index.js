@@ -4,43 +4,36 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const express_jwt_1 = __importDefault(require("express-jwt"));
 const body_parser_1 = __importDefault(require("body-parser"));
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const routes_1 = require("./routes");
+const SECRET = 'secret';
 const app = express_1.default();
 let port = process.env.PORT;
 if (!port) {
     port = '8000';
 }
-// const pool = new Pool({
-//   host: '127.0.0.1',
-//   port: 5432,
-//   database: 'test1',
-//   user: 'postgres',
-//   password: 'admin'
-// });
-// const sql = `SELECT * FROM users`;
-// pool.query(sql, [], (err, res) => {
-//   console.dir({ res });
-//   console.table( res.fields );
-//   console.table( res.rows );
-//   pool.end();
-// });
-// app.all('*', function(req, res, next) {
-//   const origin = req.get('origin');
-//   res.header('Access-Control-Allow-Origin', origin);
-//   res.header("Access-Control-Allow-Headers", "X-Requested-With");
-//   res.header('Access-Control-Allow-Headers', 'Content-Type');
-//   next();
-// });
+app.all('*', (req, res, next) => {
+    const origin = req.get('origin');
+    res.header('Access-Control-Allow-Origin', origin);
+    res.header("Access-Control-Allow-Headers", "X-Requested-With");
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
+    next();
+});
 app.use(body_parser_1.default.json());
 app.use(body_parser_1.default.urlencoded({
     extended: false
 }));
+app.use('/login', routes_1.routerLogin);
 app.get('/', (req, res) => {
-    res.json({ 'lala': 'Hello World!' });
+    const token = jsonwebtoken_1.default.sign({ foo: 'bar' }, SECRET);
+    res.json({ token });
 });
-app.get('/protected', express_jwt_1.default({ secret: 'shhhhhhared-secret' }), (req, res) => {
-    console.log(res);
+app.get('/protected', (req, res) => {
+    const token = req.headers.authorization;
+    console.log(token);
+    const decoded = jsonwebtoken_1.default.verify(token, SECRET);
+    console.log(decoded);
     res.sendStatus(200);
 });
 app.get('/file/:name', (req, res) => {
