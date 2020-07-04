@@ -14,7 +14,7 @@ routerLogin.get('/', (req, res, next) => {
     if (err) {
       return next(err)
     }
-    res.send(response.rows[0])
+    return res.send(response.rows[0])
   });
 })
 
@@ -27,7 +27,7 @@ routerLogin.post('/addUser', (req, res, next) => {
     }
     user = response.rows[0];
     if(user) {
-      return res.status(403).send({ Error: 'User exist'});
+      return res.status(400).send({ Error: 'User exist'});
     }
   });
 
@@ -37,6 +37,6 @@ routerLogin.post('/addUser', (req, res, next) => {
     if (err) {
       return next(err)
     }
-    res.send(response.rows[0])
+    return res.send(response.rows[0])
   });
 })
